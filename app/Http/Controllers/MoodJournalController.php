@@ -77,6 +77,68 @@ class MoodJournalController extends Controller
         return view('mood-journal.show', compact('journal', 'predefinedHashtags', 'todayPrompt'));
     }
 
+    public function edit($id)
+    {
+        $journal = MoodJournal::findOrFail($id);
+        
+        // Check if user owns this journal entry
+        if ($journal->user_id !== Auth::id()) {
+            abort(403, 'You can only edit your own journal entries.');
+        }
+        
+        $predefinedHashtags = MoodJournal::getPredefinedHashtags();
+        
+        return view('mood-journal.edit', compact('journal', 'predefinedHashtags'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $journal = MoodJournal::findOrFail($id);
+        
+        // Check if user owns this journal entry
+        if ($journal->user_id !== Auth::id()) {
+            abort(403, 'You can only edit your own journal entries.');
+        }
+
+        $validated = $request->validate([
+            'content' => 'required|string|max:1000',
+            'hashtags' => 'nullable|array',
+            'hashtags.*' => 'string|max:50',
+            'mood_rating' => 'nullable|integer|min:1|max:10'
+        ]);
+
+        $hashtags = $validated['hashtags'] ?? [];
+        
+        // Clean hashtags (remove # if present and convert to lowercase)
+        $cleanedHashtags = array_map(function($tag) {
+            return strtolower(ltrim($tag, '#'));
+        }, $hashtags);
+
+        $journal->update([
+            'content' => $validated['content'],
+            'hashtags' => $cleanedHashtags,
+            'mood_rating' => $validated['mood_rating'] ?? null
+        ]);
+
+        return redirect()->route('mood_journal.show', $journal->id)
+                        ->with('status', 'Journal entry updated successfully!');
+    }
+
+    public function destroy($id)
+    {
+        $journal = MoodJournal::findOrFail($id);
+        
+        // Check if user owns this journal entry
+        if ($journal->user_id !== Auth::id()) {
+            abort(403, 'You can only delete your own journal entries.');
+        }
+
+        $journal->delete();
+
+        return redirect()->route('mood_journal.index')
+                        ->with('status', 'Journal entry deleted successfully!');
+    }
+
     public function upvote($id)
     {
         $journal = MoodJournal::findOrFail($id);

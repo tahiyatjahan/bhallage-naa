@@ -143,9 +143,24 @@
                             <span>{{ $journal->comments->count() }} comments</span>
                         </a>
                     </div>
-                    <a href="{{ route('mood_journal.show', $journal->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        Read More
-                    </a>
+                    <div class="flex items-center space-x-2">
+                        @if(Auth::id() === $journal->user_id)
+                            <a href="{{ route('mood_journal.edit', $journal->id) }}" class="text-yellow-600 hover:text-yellow-800 text-sm font-medium">
+                                Edit
+                            </a>
+                            <form action="{{ route('mood_journal.destroy', $journal->id) }}" method="POST" class="inline" 
+                                  onsubmit="return confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    Delete
+                                </button>
+                            </form>
+                        @endif
+                        <a href="{{ route('mood_journal.show', $journal->id) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            Read More
+                        </a>
+                    </div>
                 </div>
             </div>
         @empty
