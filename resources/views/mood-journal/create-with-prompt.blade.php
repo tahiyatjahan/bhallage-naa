@@ -119,7 +119,7 @@
                     <a href="{{ route('mood_journal.index') }}" class="text-gray-600 hover:text-gray-800 font-medium">
                         Cancel
                     </a>
-                    <button type="submit" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-3 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg text-lg">
+                    <button type="submit" class="!bg-green-600 hover:!bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg text-lg border-2 border-green-600" style="background-color: #059669 !important; color: white !important; border: 2px solid #059669 !important;">
                         Post Entry
                     </button>
                 </div>
@@ -162,7 +162,7 @@
             <a href="{{ route('mood_journal.index') }}" class="text-gray-600 hover:text-gray-800 font-medium">
                 Cancel
             </a>
-            <button type="submit" form="journal-form" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg">
+            <button type="submit" form="journal-form" class="!bg-green-600 hover:!bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg border-2 border-green-600" style="background-color: #059669 !important; color: white !important; border: 2px solid #059669 !important;">
                 Post Entry
             </button>
         </div>
