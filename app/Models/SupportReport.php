@@ -45,9 +45,9 @@ class SupportReport extends Model
                 'category' => 'suicide',
                 'severity' => 'high',
                 'resources' => [
-                    'National Suicide Prevention Lifeline' => 'https://988lifeline.org/',
-                    'Crisis Text Line' => 'https://www.crisistextline.org/',
-                    'Emergency Services' => '911'
+                    'National Mental Health Helpline (Bangladesh)' => 'https://www.icddrb.org/what-we-do/research/mental-health',
+                    'Kaan Pete Roi (Crisis Helpline)' => 'https://www.kaanpeteroi.com/',
+                    'Emergency Services (Bangladesh)' => '999'
                 ]
             ],
             'self_harm' => [
@@ -55,9 +55,9 @@ class SupportReport extends Model
                 'category' => 'self_harm',
                 'severity' => 'high',
                 'resources' => [
-                    'Crisis Text Line' => 'https://www.crisistextline.org/',
-                    'Self-Harm Hotline' => '1-800-273-8255',
-                    'Emergency Services' => '911'
+                    'Kaan Pete Roi (Crisis Helpline)' => 'https://www.kaanpeteroi.com/',
+                    'National Mental Health Helpline' => 'https://www.icddrb.org/what-we-do/research/mental-health',
+                    'Emergency Services (Bangladesh)' => '999'
                 ]
             ],
             'abuse' => [
@@ -65,9 +65,9 @@ class SupportReport extends Model
                 'category' => 'abuse',
                 'severity' => 'high',
                 'resources' => [
-                    'National Domestic Violence Hotline' => 'https://www.thehotline.org/',
-                    'RAINN (Sexual Assault)' => 'https://www.rainn.org/',
-                    'Emergency Services' => '911'
+                    'Bangladesh National Women Lawyers Association' => 'https://www.bnwla.org/',
+                    'Ain o Salish Kendra (ASK)' => 'https://www.askbd.org/',
+                    'Emergency Services (Bangladesh)' => '999'
                 ]
             ],
             'sexual_assault' => [
@@ -75,9 +75,9 @@ class SupportReport extends Model
                 'category' => 'sexual_assault',
                 'severity' => 'high',
                 'resources' => [
-                    'RAINN (Sexual Assault)' => 'https://www.rainn.org/',
-                    'National Sexual Assault Hotline' => '1-800-656-4673',
-                    'Emergency Services' => '911'
+                    'Bangladesh National Women Lawyers Association' => 'https://www.bnwla.org/',
+                    'Ain o Salish Kendra (ASK)' => 'https://www.askbd.org/',
+                    'Emergency Services (Bangladesh)' => '999'
                 ]
             ],
             'eating_disorder' => [
@@ -85,9 +85,9 @@ class SupportReport extends Model
                 'category' => 'eating_disorder',
                 'severity' => 'medium',
                 'resources' => [
-                    'National Eating Disorders Association' => 'https://www.nationaleatingdisorders.org/',
-                    'Eating Disorder Hotline' => '1-800-931-2237',
-                    'Crisis Text Line' => 'https://www.crisistextline.org/'
+                    'Bangladesh Association of Psychiatrists' => 'https://www.bap-bd.org/',
+                    'National Institute of Mental Health (Bangladesh)' => 'https://nimh.gov.bd/',
+                    'Kaan Pete Roi (Crisis Helpline)' => 'https://www.kaanpeteroi.com/'
                 ]
             ],
             'substance_abuse' => [
@@ -95,9 +95,9 @@ class SupportReport extends Model
                 'category' => 'substance_abuse',
                 'severity' => 'medium',
                 'resources' => [
-                    'SAMHSA National Helpline' => 'https://www.samhsa.gov/find-help/national-helpline',
-                    'Alcoholics Anonymous' => 'https://www.aa.org/',
-                    'Narcotics Anonymous' => 'https://www.na.org/'
+                    'National Drug Abuse Prevention Center' => 'https://www.icddrb.org/what-we-do/research/mental-health',
+                    'Bangladesh Association of Psychiatrists' => 'https://www.bap-bd.org/',
+                    'Kaan Pete Roi (Crisis Helpline)' => 'https://www.kaanpeteroi.com/'
                 ]
             ],
             'depression' => [
@@ -105,9 +105,9 @@ class SupportReport extends Model
                 'category' => 'depression',
                 'severity' => 'medium',
                 'resources' => [
-                    'Depression and Bipolar Support Alliance' => 'https://www.dbsalliance.org/',
-                    'Mental Health America' => 'https://www.mhanational.org/',
-                    'Crisis Text Line' => 'https://www.crisistextline.org/'
+                    'Bangladesh Association of Psychiatrists' => 'https://www.bap-bd.org/',
+                    'National Institute of Mental Health (Bangladesh)' => 'https://nimh.gov.bd/',
+                    'Kaan Pete Roi (Crisis Helpline)' => 'https://www.kaanpeteroi.com/'
                 ]
             ],
             'anxiety' => [
@@ -115,9 +115,9 @@ class SupportReport extends Model
                 'category' => 'anxiety',
                 'severity' => 'medium',
                 'resources' => [
-                    'Anxiety and Depression Association' => 'https://adaa.org/',
-                    'Mental Health America' => 'https://www.mhanational.org/',
-                    'Crisis Text Line' => 'https://www.crisistextline.org/'
+                    'Bangladesh Association of Psychiatrists' => 'https://www.bap-bd.org/',
+                    'National Institute of Mental Health (Bangladesh)' => 'https://nimh.gov.bd/',
+                    'Kaan Pete Roi (Crisis Helpline)' => 'https://www.kaanpeteroi.com/'
                 ]
             ]
         ];
@@ -165,7 +165,7 @@ class SupportReport extends Model
             $message .= "\n";
         }
 
-        $message .= "If you're in immediate danger, please call 911 or your local emergency services.\n\n";
+        $message .= "If you're in immediate danger, please call 999 (Bangladesh Emergency Services) or your local emergency services.\n\n";
         $message .= "Remember: It's okay to ask for help, and you deserve support.";
 
         return $message;

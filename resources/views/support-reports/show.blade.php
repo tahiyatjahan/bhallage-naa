@@ -131,7 +131,7 @@
                 <div>
                     <h3 class="font-semibold text-red-800 mb-2">Emergency Support</h3>
                     <p class="text-red-700 text-sm">
-                        If you're in immediate danger or experiencing a crisis, please call <strong>911</strong> or your local emergency services immediately.
+                        If you're in immediate danger or experiencing a crisis, please call <strong>999</strong> (Bangladesh Emergency Services) or your local emergency services immediately.
                     </p>
                 </div>
             </div>
