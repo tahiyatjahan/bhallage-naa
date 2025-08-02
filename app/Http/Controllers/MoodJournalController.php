@@ -13,7 +13,7 @@ class MoodJournalController extends Controller
 {
     public function index(Request $request)
     {
-        $query = MoodJournal::with(['user', 'comments', 'upvotes'])->latest();
+        $query = MoodJournal::with(['user', 'comments', 'upvotes', 'dailyPrompt'])->latest();
         
         // Filter by hashtag if provided
         if ($request->has('hashtag') && $request->hashtag) {
@@ -55,8 +55,12 @@ class MoodJournalController extends Controller
             return strtolower(ltrim($tag, '#'));
         }, $hashtags);
 
+        // Get today's daily prompt
+        $todayPrompt = DailyPrompt::getTodayPrompt();
+
         $journal = MoodJournal::create([
             'user_id' => Auth::id(),
+            'daily_prompt_id' => $todayPrompt ? $todayPrompt->id : null,
             'content' => $validated['content'],
             'hashtags' => $cleanedHashtags,
             'mood_rating' => $validated['mood_rating'] ?? null
@@ -84,7 +88,7 @@ class MoodJournalController extends Controller
 
     public function show($id)
     {
-        $journal = MoodJournal::with(['user', 'comments.user', 'upvotes'])->findOrFail($id);
+        $journal = MoodJournal::with(['user', 'comments.user', 'upvotes', 'dailyPrompt'])->findOrFail($id);
         $predefinedHashtags = MoodJournal::getPredefinedHashtags();
         
         // Get today's daily prompt

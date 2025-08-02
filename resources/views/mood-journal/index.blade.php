@@ -108,6 +108,23 @@
                     @endif
                 </div>
 
+                <!-- Daily Prompt Info -->
+                @if($journal->dailyPrompt)
+                    <div class="mb-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-blue-800">Responding to Daily Prompt</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $journal->dailyPrompt->category_color }} text-white">
+                                {{ $journal->dailyPrompt->category_display_name }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-blue-700 italic">"{{ $journal->dailyPrompt->prompt }}"</p>
+                        <p class="text-xs text-blue-600 mt-1">{{ $journal->dailyPrompt->prompt_date->format('l, F j, Y') }}</p>
+                    </div>
+                @endif
+
                 <div class="mb-4">
                     <p class="text-gray-800 leading-relaxed">{{ $journal->content }}</p>
                 </div>

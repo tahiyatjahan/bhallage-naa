@@ -10,6 +10,7 @@ class MoodJournal extends Model
 {
     protected $fillable = [
         'user_id',
+        'daily_prompt_id',
         'content',
         'hashtags',
         'mood_rating'
@@ -23,6 +24,11 @@ class MoodJournal extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function dailyPrompt(): BelongsTo
+    {
+        return $this->belongsTo(DailyPrompt::class);
     }
 
     public function comments(): HasMany
