@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     // Mood Journal
     Route::get('/mood-journal', [MoodJournalController::class, 'index'])->name('mood_journal.index');
     Route::get('/mood-journal/create', [MoodJournalController::class, 'create'])->name('mood_journal.create');
+    Route::get('/mood-journal/create-with-prompt/{promptId?}', [MoodJournalController::class, 'createWithPrompt'])->name('mood_journal.create-with-prompt');
     Route::post('/mood-journal', [MoodJournalController::class, 'store'])->name('mood_journal.store');
     Route::get('/mood-journal/{id}', [MoodJournalController::class, 'show'])->name('mood_journal.show');
     Route::get('/mood-journal/{id}/edit', [MoodJournalController::class, 'edit'])->name('mood_journal.edit');

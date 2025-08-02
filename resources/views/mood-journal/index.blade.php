@@ -36,7 +36,7 @@
                     </div>
                     <p class="text-lg text-gray-800 mb-4 leading-relaxed">{{ $todayPrompt->prompt }}</p>
                     <div class="flex items-center space-x-4">
-                        <a href="{{ route('mood_journal.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
+                        <a href="{{ route('mood_journal.create-with-prompt') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
                             Write About This
                         </a>
                         <a href="{{ route('daily-prompt.today') }}" class="text-blue-600 hover:text-blue-800 font-medium">
@@ -109,7 +109,7 @@
                 </div>
 
                 <!-- Daily Prompt Info -->
-                @if($journal->dailyPrompt)
+                @if($journal->daily_prompt_id && $journal->dailyPrompt)
                     <div class="mb-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
                         <div class="flex items-center space-x-2 mb-2">
                             <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

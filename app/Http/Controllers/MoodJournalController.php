@@ -39,13 +39,28 @@ class MoodJournalController extends Controller
         return view('mood-journal.create', compact('predefinedHashtags', 'todayPrompt'));
     }
 
+    public function createWithPrompt($promptId = null)
+    {
+        $predefinedHashtags = MoodJournal::getPredefinedHashtags();
+        
+        // Get the specific prompt or today's prompt
+        if ($promptId) {
+            $prompt = DailyPrompt::findOrFail($promptId);
+        } else {
+            $prompt = DailyPrompt::getTodayPrompt();
+        }
+        
+        return view('mood-journal.create-with-prompt', compact('predefinedHashtags', 'prompt'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
             'content' => 'required|string|max:1000',
             'hashtags' => 'nullable|array',
             'hashtags.*' => 'string|max:50',
-            'mood_rating' => 'nullable|integer|min:1|max:10'
+            'mood_rating' => 'nullable|integer|min:1|max:10',
+            'daily_prompt_id' => 'nullable|exists:daily_prompts,id'
         ]);
 
         $hashtags = $validated['hashtags'] ?? [];
@@ -55,12 +70,9 @@ class MoodJournalController extends Controller
             return strtolower(ltrim($tag, '#'));
         }, $hashtags);
 
-        // Get today's daily prompt
-        $todayPrompt = DailyPrompt::getTodayPrompt();
-
         $journal = MoodJournal::create([
             'user_id' => Auth::id(),
-            'daily_prompt_id' => $todayPrompt ? $todayPrompt->id : null,
+            'daily_prompt_id' => $validated['daily_prompt_id'] ?? null,
             'content' => $validated['content'],
             'hashtags' => $cleanedHashtags,
             'mood_rating' => $validated['mood_rating'] ?? null
