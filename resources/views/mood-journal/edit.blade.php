@@ -105,29 +105,29 @@
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <div class="flex space-x-4">
-                        <a href="{{ route('mood_journal.show', $journal->id) }}" 
-                           class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
-                            Cancel
-                        </a>
-                    </div>
-                    <div class="flex space-x-4">
-                        <form action="{{ route('mood_journal.destroy', $journal->id) }}" method="POST" class="inline" 
-                              onsubmit="return confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" 
-                                    class="px-4 py-2 text-red-600 hover:text-red-800 font-medium">
-                                Delete Entry
-                            </button>
-                        </form>
-                        <button type="submit" 
-                                class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg">
-                            Update Entry
-                        </button>
-                    </div>
+                    <a href="{{ route('mood_journal.show', $journal->id) }}" 
+                       class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg">
+                        Update Entry
+                    </button>
                 </div>
             </form>
+
+            <!-- Separate Delete Form -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <form action="{{ route('mood_journal.destroy', $journal->id) }}" method="POST" 
+                      onsubmit="return confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" 
+                            class="w-full px-4 py-2 text-red-600 hover:text-red-800 font-medium border border-red-300 rounded-md hover:bg-red-50 transition-colors">
+                        Delete Entry
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

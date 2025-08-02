@@ -47,13 +47,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/mood-journal', [MoodJournalController::class, 'index'])->name('mood_journal.index');
     Route::get('/mood-journal/create', [MoodJournalController::class, 'create'])->name('mood_journal.create');
     Route::post('/mood-journal', [MoodJournalController::class, 'store'])->name('mood_journal.store');
+    Route::get('/mood-journal/{id}', [MoodJournalController::class, 'show'])->name('mood_journal.show');
     Route::get('/mood-journal/{id}/edit', [MoodJournalController::class, 'edit'])->name('mood_journal.edit');
     Route::patch('/mood-journal/{id}', [MoodJournalController::class, 'update'])->name('mood_journal.update');
     Route::delete('/mood-journal/{id}', [MoodJournalController::class, 'destroy'])->name('mood_journal.destroy');
     Route::get('/mood-journal/hashtag/{hashtag}', [MoodJournalController::class, 'filterByHashtag'])->name('mood_journal.hashtag');
     Route::post('/mood-journal/{id}/upvote', [MoodJournalController::class, 'upvote'])->name('mood_journal.upvote');
     Route::post('/mood-journal/{id}/comment', [MoodJournalController::class, 'comment'])->name('mood_journal.comment');
-    Route::get('/mood-journal/{id}', [MoodJournalController::class, 'show'])->name('mood_journal.show');
     Route::delete('/mood-journal/comment/{id}', [MoodJournalController::class, 'deleteComment'])->name('mood_journal.comment.delete');
     Route::get('/mood-journal/comment/{id}/edit', [MoodJournalController::class, 'editComment'])->name('mood_journal.comment.edit');
     Route::patch('/mood-journal/comment/{id}', [MoodJournalController::class, 'updateComment'])->name('mood_journal.comment.update');
