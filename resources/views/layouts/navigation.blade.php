@@ -2,7 +2,14 @@
     <div class="flex items-center space-x-4">
         <a href="/home" class="text-lg font-bold text-yellow-900 hover:text-white">Home</a>
         <a href="{{ route('profile.show') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Profile</a>
-        <a href="{{ route('support-reports.index') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Support</a>
+        <a href="{{ route('support-reports.index') }}" class="text-lg font-bold text-yellow-900 hover:text-white relative">
+            Support
+            @if(isset($unreadSupportReports) && $unreadSupportReports > 0)
+                <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                    {{ $unreadSupportReports > 99 ? '99+' : $unreadSupportReports }}
+                </span>
+            @endif
+        </a>
         @if(Auth::user() && Auth::user()->is_admin)
             <div class="flex items-center space-x-4 ml-4 pl-4 border-l-2 border-yellow-700">
                 <a href="{{ route('admin.dashboard') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Admin</a>

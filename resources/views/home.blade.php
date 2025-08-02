@@ -101,6 +101,28 @@
         </div>
     </div>
 
+    <!-- Support Notification -->
+    @if(isset($unreadSupportReports) && $unreadSupportReports > 0)
+        <div class="feature-card mb-8 bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500">
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-red-800">You have {{ $unreadSupportReports }} unread support {{ $unreadSupportReports === 1 ? 'message' : 'messages' }}</h3>
+                    <p class="text-red-700">We've detected some concerning content in your journal entries and have resources to help.</p>
+                </div>
+                <div class="flex-shrink-0">
+                    <a href="{{ route('support-reports.index') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        View Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Quick Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="story-card">
