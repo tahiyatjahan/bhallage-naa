@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8 pb-24 md:pb-8">
     <div class="max-w-4xl mx-auto">
         <!-- Back Button -->
         <div class="mb-6">
@@ -44,7 +44,7 @@
         <div class="bg-white rounded-lg shadow-md p-6">
             <h1 class="text-2xl font-bold text-gray-900 mb-6">Write Your Response</h1>
 
-            <form action="{{ route('mood_journal.store') }}" method="POST">
+            <form action="{{ route('mood_journal.store') }}" method="POST" id="journal-form">
                 @csrf
                 <input type="hidden" name="daily_prompt_id" value="{{ $prompt->id ?? '' }}">
 
@@ -115,11 +115,11 @@
                 </div>
 
                 <!-- Submit Button -->
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200">
                     <a href="{{ route('mood_journal.index') }}" class="text-gray-600 hover:text-gray-800 font-medium">
                         Cancel
                     </a>
-                    <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg">
+                    <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg text-lg">
                         Post Entry
                     </button>
                 </div>
@@ -151,6 +151,20 @@
                     </ul>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sticky Submit Button for Mobile/Long Forms -->
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 md:hidden">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+            <a href="{{ route('mood_journal.index') }}" class="text-gray-600 hover:text-gray-800 font-medium">
+                Cancel
+            </a>
+            <button type="submit" form="journal-form" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg">
+                Post Entry
+            </button>
         </div>
     </div>
 </div>
