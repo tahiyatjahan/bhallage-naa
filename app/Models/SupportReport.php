@@ -41,7 +41,7 @@ class SupportReport extends Model
     {
         return [
             'suicide' => [
-                'keywords' => ['suicide', 'kill myself', 'end my life', 'want to die', 'better off dead'],
+                'keywords' => ['suicide', 'suicidal', 'kill myself', 'end my life', 'want to die', 'better off dead', 'take my life', 'end it all', 'no reason to live', 'better dead', 'want to end it'],
                 'category' => 'suicide',
                 'severity' => 'high',
                 'resources' => [
@@ -51,7 +51,7 @@ class SupportReport extends Model
                 ]
             ],
             'self_harm' => [
-                'keywords' => ['self harm', 'cut myself', 'hurt myself', 'self injury'],
+                'keywords' => ['self harm', 'self-harm', 'cut myself', 'hurt myself', 'self injury', 'self-injury', 'burn myself', 'hit myself'],
                 'category' => 'self_harm',
                 'severity' => 'high',
                 'resources' => [
@@ -61,7 +61,7 @@ class SupportReport extends Model
                 ]
             ],
             'abuse' => [
-                'keywords' => ['abuse', 'abused', 'abusive', 'domestic violence', 'physical abuse'],
+                'keywords' => ['abuse', 'abused', 'abusive', 'domestic violence', 'physical abuse', 'emotional abuse', 'verbal abuse', 'mental abuse'],
                 'category' => 'abuse',
                 'severity' => 'high',
                 'resources' => [
@@ -71,7 +71,7 @@ class SupportReport extends Model
                 ]
             ],
             'sexual_assault' => [
-                'keywords' => ['rape', 'sexual assault', 'sexual abuse', 'molestation'],
+                'keywords' => ['rape', 'sexual assault', 'sexual abuse', 'molestation', 'sexual harassment', 'harassment', 'unwanted touching', 'sexual violence', 'sexual attack'],
                 'category' => 'sexual_assault',
                 'severity' => 'high',
                 'resources' => [
@@ -81,7 +81,7 @@ class SupportReport extends Model
                 ]
             ],
             'eating_disorder' => [
-                'keywords' => ['anorexia', 'bulimia', 'eating disorder', 'starve myself', 'binge eating'],
+                'keywords' => ['anorexia', 'bulimia', 'eating disorder', 'starve myself', 'binge eating', 'purging', 'not eating', 'overeating', 'food issues'],
                 'category' => 'eating_disorder',
                 'severity' => 'medium',
                 'resources' => [
@@ -91,7 +91,7 @@ class SupportReport extends Model
                 ]
             ],
             'substance_abuse' => [
-                'keywords' => ['drugs', 'alcohol', 'overdose', 'addiction', 'substance abuse'],
+                'keywords' => ['drugs', 'alcohol', 'overdose', 'addiction', 'substance abuse', 'drug abuse', 'alcoholism', 'drinking problem', 'drug problem'],
                 'category' => 'substance_abuse',
                 'severity' => 'medium',
                 'resources' => [
@@ -101,7 +101,7 @@ class SupportReport extends Model
                 ]
             ],
             'depression' => [
-                'keywords' => ['depression', 'depressed', 'hopeless', 'worthless', 'no reason to live'],
+                'keywords' => ['depression', 'depressed', 'hopeless', 'worthless', 'no reason to live', 'sad all the time', 'can\'t get out of bed', 'feel empty', 'life is meaningless'],
                 'category' => 'depression',
                 'severity' => 'medium',
                 'resources' => [
@@ -111,7 +111,7 @@ class SupportReport extends Model
                 ]
             ],
             'anxiety' => [
-                'keywords' => ['anxiety', 'panic attack', 'anxious', 'overwhelmed', 'can\'t breathe'],
+                'keywords' => ['anxiety', 'panic attack', 'anxious', 'overwhelmed', 'can\'t breathe', 'panic', 'worried all the time', 'constant worry', 'fear'],
                 'category' => 'anxiety',
                 'severity' => 'medium',
                 'resources' => [
