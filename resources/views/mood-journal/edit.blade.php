@@ -110,6 +110,8 @@
                            class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
                             Cancel
                         </a>
+                    </div>
+                    <div class="flex space-x-4">
                         <form action="{{ route('mood_journal.destroy', $journal->id) }}" method="POST" class="inline" 
                               onsubmit="return confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')">
                             @csrf
@@ -119,11 +121,11 @@
                                 Delete Entry
                             </button>
                         </form>
+                        <button type="submit" 
+                                class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg">
+                            Update Entry
+                        </button>
                     </div>
-                    <button type="submit" 
-                            class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg">
-                        Update Entry
-                    </button>
                 </div>
             </form>
         </div>
