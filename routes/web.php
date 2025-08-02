@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MoodJournalController;
 use App\Http\Controllers\DailyPromptController;
 use App\Http\Controllers\CreativePostController;
+use App\Http\Controllers\SupportReportController;
 
 Route::get('/welcome', function () {
     return view('welcome_landing');
@@ -57,6 +58,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/mood-journal/comment/{id}', [MoodJournalController::class, 'deleteComment'])->name('mood_journal.comment.delete');
     Route::get('/mood-journal/comment/{id}/edit', [MoodJournalController::class, 'editComment'])->name('mood_journal.comment.edit');
     Route::patch('/mood-journal/comment/{id}', [MoodJournalController::class, 'updateComment'])->name('mood_journal.comment.update');
+
+    // Support Reports
+    Route::get('/support-reports', [SupportReportController::class, 'index'])->name('support-reports.index');
+    Route::get('/support-reports/{id}', [SupportReportController::class, 'show'])->name('support-reports.show');
+    Route::patch('/support-reports/{id}/read', [SupportReportController::class, 'markAsRead'])->name('support-reports.read');
+    Route::delete('/support-reports/{id}', [SupportReportController::class, 'destroy'])->name('support-reports.destroy');
 
     // Express Yourself - Creative Posts
     Route::get('/express-yourself', [CreativePostController::class, 'index'])->name('creative-posts.index');

@@ -62,4 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\CreativePost::class);
     }
+
+    public function supportReports()
+    {
+        return $this->hasMany(\App\Models\SupportReport::class);
+    }
 }

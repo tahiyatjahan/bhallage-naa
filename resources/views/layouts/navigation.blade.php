@@ -2,6 +2,7 @@
     <div class="flex items-center space-x-4">
         <a href="/home" class="text-lg font-bold text-yellow-900 hover:text-white">Home</a>
         <a href="{{ route('profile.show') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Profile</a>
+        <a href="{{ route('support-reports.index') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Support</a>
         @if(Auth::user() && Auth::user()->is_admin)
             <div class="flex items-center space-x-4 ml-4 pl-4 border-l-2 border-yellow-700">
                 <a href="{{ route('admin.dashboard') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Admin</a>

@@ -30,6 +30,11 @@ class MoodJournal extends Model
         return $this->hasMany(MoodJournalComment::class);
     }
 
+    public function supportReports()
+    {
+        return $this->hasMany(SupportReport::class);
+    }
+
     public function upvotes(): HasMany
     {
         return $this->hasMany(MoodJournalUpvote::class);

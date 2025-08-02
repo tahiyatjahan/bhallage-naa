@@ -62,6 +62,22 @@ class MoodJournalController extends Controller
             'mood_rating' => $validated['mood_rating'] ?? null
         ]);
 
+        // Check for triggering keywords and create support report if needed
+        $detectedKeywords = \App\Models\SupportReport::detectKeywords($validated['content']);
+        
+        if (!empty($detectedKeywords)) {
+            $supportMessage = \App\Models\SupportReport::generateSupportMessage($detectedKeywords);
+            $supportResources = \App\Models\SupportReport::getSupportResources($detectedKeywords);
+            
+            \App\Models\SupportReport::create([
+                'user_id' => Auth::id(),
+                'mood_journal_id' => $journal->id,
+                'keywords_detected' => $detectedKeywords,
+                'support_resources' => $supportResources,
+                'message' => $supportMessage
+            ]);
+        }
+
         return redirect()->route('mood_journal.show', $journal->id)
                         ->with('status', 'Journal entry created successfully!');
     }
