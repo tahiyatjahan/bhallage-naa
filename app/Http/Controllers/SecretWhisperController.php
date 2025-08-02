@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Whisper;
+use App\Models\WhisperReport;
+
+class SecretWhisperController extends Controller
+{
+    public function index()
+    {
+        $whispers = Whisper::latest()->get();
+        return view('whispers.index', compact('whispers'));
+    }
+
+    public function create()
+    {
+        return view('whispers.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'content' => 'required|string|max:1000',
+        ]);
+        Whisper::create([
+            'content' => $request->content,
+        ]);
+        return redirect()->route('whispers.index')->with('status', 'Your secret whisper has been posted!');
+    }
+
+    public function report($id)
+    {
+        $whisper = Whisper::findOrFail($id);
+        return view('whispers.report', compact('whisper'));
+    }
+
+    public function storeReport(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+        WhisperReport::create([
+            'whisper_id' => $id,
+            'reason' => $request->reason,
+        ]);
+        return redirect()->route('whispers.index')->with('status', 'Thank you for reporting this whisper.');
+    }
+}
