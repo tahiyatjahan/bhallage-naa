@@ -26,6 +26,7 @@ class SecretWhisperController extends Controller
         ]);
         Whisper::create([
             'content' => $request->content,
+            'user_id' => auth()->id(),
         ]);
         return redirect()->route('whispers.index')->with('status', 'Your secret whisper has been posted!');
     }
