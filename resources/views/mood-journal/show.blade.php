@@ -208,9 +208,6 @@ function upvoteJournal(journalId) {
     const button = document.getElementById(`upvote-btn-${journalId}`);
     const countSpan = document.getElementById(`upvote-count-${journalId}`);
     
-    // Disable button during request
-    button.disabled = true;
-    
     fetch(`/mood-journal/${journalId}/upvote`, {
         method: 'POST',
         headers: {
@@ -222,23 +219,14 @@ function upvoteJournal(journalId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Update count
+            // Update count only
             countSpan.textContent = `${data.upvotes} upvotes`;
-            
-            // Visual feedback
-            button.classList.add('text-blue-600');
-            setTimeout(() => {
-                button.classList.remove('text-blue-600');
-            }, 1000);
         } else {
             console.error('Upvote failed:', data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-    })
-    .finally(() => {
-        button.disabled = false;
     });
 }
 
