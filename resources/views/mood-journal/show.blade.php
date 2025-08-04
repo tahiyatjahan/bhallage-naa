@@ -104,7 +104,14 @@
             <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                 <div class="flex items-center space-x-6">
                     @php
-                        $hasUpvoted = $journal->upvotes->where('user_id', Auth::id())->count() > 0;
+                        $hasUpvoted = \App\Models\MoodJournalUpvote::where('user_id', Auth::id())
+                            ->where('mood_journal_id', $journal->id)
+                            ->exists();
+                        // Debug info
+                        echo "<!-- Debug: User ID: " . Auth::id() . " -->";
+                        echo "<!-- Debug: Journal ID: " . $journal->id . " -->";
+                        echo "<!-- Debug: Total upvotes: " . $journal->upvotes->count() . " -->";
+                        echo "<!-- Debug: Has upvoted: " . ($hasUpvoted ? 'true' : 'false') . " -->";
                     @endphp
                     <button type="button" onclick="upvoteJournal({{ $journal->id }})" class="flex items-center space-x-2 {{ $hasUpvoted ? 'text-blue-600' : 'text-gray-500' }} hover:text-blue-600 transition-colors" id="upvote-btn-{{ $journal->id }}">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

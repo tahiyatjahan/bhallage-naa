@@ -100,7 +100,7 @@ class MoodJournalController extends Controller
 
     public function show($id)
     {
-        $journal = MoodJournal::with(['user', 'comments.user', 'upvotes', 'dailyPrompt'])->findOrFail($id);
+        $journal = MoodJournal::with(['user', 'comments.user', 'upvotes.user', 'dailyPrompt'])->findOrFail($id);
         $predefinedHashtags = MoodJournal::getPredefinedHashtags();
         
         // Get today's daily prompt
