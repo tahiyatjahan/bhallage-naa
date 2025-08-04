@@ -191,6 +191,15 @@ class MoodJournalController extends Controller
             $message = 'Journal upvoted!';
         }
         
+        // Return JSON response for AJAX requests
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'upvotes' => $journal->upvotes()->count()
+            ]);
+        }
+        
         return back()->with('status', $message);
     }
 
@@ -200,11 +209,27 @@ class MoodJournalController extends Controller
             'content' => 'required|string|max:500'
         ]);
 
-        MoodJournalComment::create([
+        $comment = MoodJournalComment::create([
             'user_id' => Auth::id(),
             'mood_journal_id' => $id,
             'content' => $validated['content']
         ]);
+
+        // Return JSON response for AJAX requests
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment added successfully!',
+                'comment' => [
+                    'id' => $comment->id,
+                    'content' => $comment->content,
+                    'user' => [
+                        'name' => $comment->user->name
+                    ]
+                ],
+                'commentCount' => MoodJournalComment::where('mood_journal_id', $id)->count()
+            ]);
+        }
 
         return back()->with('status', 'Comment added successfully!');
     }
@@ -215,10 +240,28 @@ class MoodJournalController extends Controller
         
         // Check if user owns the comment or is admin
         if ($comment->user_id !== Auth::id() && !Auth::user()->is_admin) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized action.'
+                ], 403);
+            }
             return back()->with('error', 'Unauthorized action.');
         }
         
+        $journalId = $comment->mood_journal_id;
         $comment->delete();
+        
+        // Return JSON response for AJAX requests
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment deleted successfully.',
+                'journalId' => $journalId,
+                'commentCount' => MoodJournalComment::where('mood_journal_id', $journalId)->count()
+            ]);
+        }
+        
         return back()->with('status', 'Comment deleted successfully.');
     }
 

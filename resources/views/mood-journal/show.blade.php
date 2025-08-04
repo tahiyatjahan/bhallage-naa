@@ -109,20 +109,17 @@
             <!-- Actions -->
             <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                 <div class="flex items-center space-x-6">
-                    <form action="{{ route('mood_journal.upvote', $journal->id) }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="flex items-center space-x-2 text-gray-500 hover:text-blue-600 transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
-                            </svg>
-                            <span class="font-medium">{{ $journal->upvotes->count() }} upvotes</span>
-                        </button>
-                    </form>
+                    <button type="button" onclick="upvoteJournal({{ $journal->id }})" class="flex items-center space-x-2 text-gray-500 hover:text-blue-600 transition-colors" id="upvote-btn-{{ $journal->id }}">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                        </svg>
+                        <span class="font-medium" id="upvote-count-{{ $journal->id }}">{{ $journal->upvotes->count() }} upvotes</span>
+                    </button>
                     <div class="flex items-center space-x-2 text-gray-500">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                         </svg>
-                        <span class="font-medium">{{ $journal->comments->count() }} comments</span>
+                        <span class="font-medium" id="comment-count-{{ $journal->id }}">{{ $journal->comments->count() }} comments</span>
                     </div>
                 </div>
                 @if(Auth::id() === $journal->user_id)
@@ -154,7 +151,7 @@
             <h2 class="text-xl font-semibold text-gray-900 mb-6">Comments</h2>
 
             <!-- Add Comment Form -->
-            <form action="{{ route('mood_journal.comment', $journal->id) }}" method="POST" class="mb-8">
+            <form id="comment-form-{{ $journal->id }}" class="mb-8">
                 @csrf
                 <div class="mb-4">
                     <textarea 
@@ -164,9 +161,7 @@
                         placeholder="Add a comment..."
                         required
                     >{{ old('content') }}</textarea>
-                    @error('content')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                    <div id="comment-error-{{ $journal->id }}" class="mt-1 text-sm text-red-600 hidden"></div>
                 </div>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
                     Add Comment
@@ -174,9 +169,9 @@
             </form>
 
             <!-- Comments List -->
-            <div class="space-y-4">
+            <div id="comments-container-{{ $journal->id }}" class="space-y-4">
                 @forelse($journal->comments as $comment)
-                    <div class="border-b border-gray-200 pb-4 last:border-b-0">
+                    <div class="border-b border-gray-200 pb-4 last:border-b-0" id="comment-{{ $comment->id }}">
                         <div class="flex items-start justify-between mb-2">
                             <div class="flex items-center space-x-3">
                                 @if($comment->user->profile_picture)
@@ -194,18 +189,14 @@
                             @if($comment->user_id === Auth::id() || Auth::user()->is_admin)
                                 <div class="flex items-center space-x-2">
                                     <a href="{{ route('mood_journal.comment.edit', $comment->id) }}" class="text-blue-600 hover:text-blue-800 text-sm">Edit</a>
-                                    <form action="{{ route('mood_journal.comment.delete', $comment->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm" onclick="return confirm('Are you sure you want to delete this comment?')">Delete</button>
-                                    </form>
+                                    <button type="button" onclick="deleteComment({{ $comment->id }})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
                                 </div>
                             @endif
                         </div>
                         <p class="text-gray-800 ml-11">{{ $comment->content }}</p>
                     </div>
                 @empty
-                    <div class="text-center py-8">
+                    <div class="text-center py-8" id="no-comments-{{ $journal->id }}">
                         <p class="text-gray-500">No comments yet. Be the first to comment!</p>
                     </div>
                 @endforelse
@@ -213,4 +204,187 @@
         </div>
     </div>
 </div>
+
+<script>
+// CSRF token for AJAX requests
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+// Upvote functionality
+function upvoteJournal(journalId) {
+    const button = document.getElementById(`upvote-btn-${journalId}`);
+    const countSpan = document.getElementById(`upvote-count-${journalId}`);
+    
+    // Disable button during request
+    button.disabled = true;
+    
+    fetch(`/mood-journal/${journalId}/upvote`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update count
+            countSpan.textContent = `${data.upvotes} upvotes`;
+            
+            // Visual feedback
+            button.classList.add('text-blue-600');
+            setTimeout(() => {
+                button.classList.remove('text-blue-600');
+            }, 1000);
+        } else {
+            console.error('Upvote failed:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    })
+    .finally(() => {
+        button.disabled = false;
+    });
+}
+
+// Comment functionality
+function addComment(journalId) {
+    const form = document.getElementById(`comment-form-${journalId}`);
+    const textarea = form.querySelector('textarea[name="content"]');
+    const errorDiv = document.getElementById(`comment-error-${journalId}`);
+    const submitButton = form.querySelector('button[type="submit"]');
+    
+    // Clear previous errors
+    errorDiv.classList.add('hidden');
+    errorDiv.textContent = '';
+    
+    // Disable form during submission
+    submitButton.disabled = true;
+    submitButton.textContent = 'Adding...';
+    
+    fetch(`/mood-journal/${journalId}/comment`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            content: textarea.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Clear form
+            textarea.value = '';
+            
+            // Update comment count
+            const countSpan = document.getElementById(`comment-count-${journalId}`);
+            countSpan.textContent = `${data.commentCount} comments`;
+            
+            // Add new comment to the list
+            const commentsContainer = document.getElementById(`comments-container-${journalId}`);
+            const noCommentsDiv = document.getElementById(`no-comments-${journalId}`);
+            
+            if (noCommentsDiv) {
+                noCommentsDiv.remove();
+            }
+            
+            const newCommentHtml = `
+                <div class="border-b border-gray-200 pb-4 last:border-b-0" id="comment-${data.comment.id}">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                <span class="text-gray-600 font-semibold text-sm">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">{{ Auth::user()->name }}</h4>
+                                <p class="text-sm text-gray-500">Just now</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <a href="/mood-journal/comment/${data.comment.id}/edit" class="text-blue-600 hover:text-blue-800 text-sm">Edit</a>
+                            <button type="button" onclick="deleteComment(${data.comment.id})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                        </div>
+                    </div>
+                    <p class="text-gray-800 ml-11">${data.comment.content}</p>
+                </div>
+            `;
+            
+            commentsContainer.insertAdjacentHTML('afterbegin', newCommentHtml);
+            
+        } else {
+            // Show error
+            errorDiv.textContent = data.message || 'Failed to add comment';
+            errorDiv.classList.remove('hidden');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        errorDiv.textContent = 'An error occurred while adding the comment';
+        errorDiv.classList.remove('hidden');
+    })
+    .finally(() => {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Add Comment';
+    });
+}
+
+// Delete comment functionality
+function deleteComment(commentId) {
+    if (!confirm('Are you sure you want to delete this comment?')) {
+        return;
+    }
+    
+    fetch(`/mood-journal/comment/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove comment from DOM
+            const commentElement = document.getElementById(`comment-${commentId}`);
+            commentElement.remove();
+            
+            // Update comment count
+            const journalId = data.journalId;
+            const countSpan = document.getElementById(`comment-count-${journalId}`);
+            countSpan.textContent = `${data.commentCount} comments`;
+            
+            // Show no comments message if no comments left
+            const commentsContainer = document.getElementById(`comments-container-${journalId}`);
+            if (commentsContainer.children.length === 0) {
+                commentsContainer.innerHTML = `
+                    <div class="text-center py-8" id="no-comments-${journalId}">
+                        <p class="text-gray-500">No comments yet. Be the first to comment!</p>
+                    </div>
+                `;
+            }
+        } else {
+            console.error('Delete failed:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+// Set up form submission handlers
+document.addEventListener('DOMContentLoaded', function() {
+    const commentForm = document.getElementById('comment-form-{{ $journal->id }}');
+    if (commentForm) {
+        commentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addComment({{ $journal->id }});
+        });
+    }
+});
+</script>
 @endsection 
