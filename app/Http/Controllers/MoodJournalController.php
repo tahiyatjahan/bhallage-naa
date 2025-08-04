@@ -182,25 +182,22 @@ class MoodJournalController extends Controller
         
         if ($existingUpvote) {
             $existingUpvote->delete();
-            $message = 'Upvote removed.';
         } else {
             MoodJournalUpvote::create([
                 'user_id' => Auth::id(),
                 'mood_journal_id' => $id
             ]);
-            $message = 'Journal upvoted!';
         }
         
         // Return JSON response for AJAX requests
         if (request()->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => $message,
                 'upvotes' => $journal->upvotes()->count()
             ]);
         }
         
-        return back()->with('status', $message);
+        return back();
     }
 
     public function comment(Request $request, $id)

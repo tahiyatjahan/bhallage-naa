@@ -13,12 +13,6 @@
             </a>
         </div>
 
-        @if(session('status'))
-            <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                {{ session('status') }}
-            </div>
-        @endif
-
         <!-- Daily Prompt Section -->
         @if($todayPrompt)
             <div class="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg shadow-md p-6 border-l-4 border-blue-500">
