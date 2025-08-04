@@ -130,7 +130,7 @@ bhallage-naa/
 - Safe space for vulnerable thoughts
 
 ### **Daily Prompts**
-- AI-generated daily prompts
+- Auto generated daily prompts
 - Admin can create custom prompts
 - Categorized prompts (general, gratitude, reflection)
 
