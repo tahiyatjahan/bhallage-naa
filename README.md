@@ -7,7 +7,7 @@ A comprehensive Laravel-based web application designed to support mental health 
 ### **Core Features**
 - **Mood Journal**: Document feelings with hashtags and mood ratings
 - **Secret Whispers**: Anonymous sharing in a safe space
-- **Daily Prompts**: AI-generated prompts for journaling inspiration
+- **Daily Prompts**: Auto generated prompts for journaling inspiration
 - **Express Yourself**: Share creative content (music, art, poetry, photography)
 - **Admin Panel**: Comprehensive management system
 
