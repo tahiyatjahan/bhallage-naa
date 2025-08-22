@@ -162,10 +162,11 @@
     function markAsRead(notificationId) {
         const notification = document.getElementById(`notification-${notificationId}`);
         const markReadButton = notification.querySelector('button[onclick*="markAsRead"]');
+        let originalText = '';
         
         // Show loading state
         if (markReadButton) {
-            const originalText = markReadButton.textContent;
+            originalText = markReadButton.textContent;
             markReadButton.disabled = true;
             markReadButton.textContent = 'Marking...';
         }
@@ -175,7 +176,10 @@
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
             },
+            credentials: 'same-origin',
         })
         .then(response => response.json())
         .then(data => {
@@ -230,7 +234,10 @@
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
             },
+            credentials: 'same-origin',
         })
         .then(response => response.json())
         .then(data => {
@@ -283,10 +290,11 @@
         
         const notification = document.getElementById(`notification-${notificationId}`);
         const deleteButton = notification.querySelector('button[onclick*="deleteNotification"]');
+        let originalText = '';
         
         // Show loading state
         if (deleteButton) {
-            const originalText = deleteButton.textContent;
+            originalText = deleteButton.textContent;
             deleteButton.disabled = true;
             deleteButton.textContent = 'Deleting...';
         }
@@ -296,7 +304,10 @@
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
             },
+            credentials: 'same-origin',
         })
         .then(response => response.json())
         .then(data => {
@@ -326,7 +337,7 @@
     }
     
     function updateUnreadCount() {
-        fetch('/notifications/unread/count')
+        fetch('/notifications/unread/count', { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' })
             .then(response => response.json())
             .then(data => {
                 const countElement = document.querySelector('.font-semibold');
