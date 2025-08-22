@@ -23,7 +23,7 @@
                 </div>
                 <div class="flex space-x-3">
                     @if($unreadCount > 0)
-                        <button onclick="markAllAsRead()" 
+                        <button type="button" onclick="markAllAsRead()" 
                                 class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center">
                             <span class="mr-2">✓</span>
                             Mark All Read
@@ -95,13 +95,13 @@
                                     @endif
                                     
                                     @if(!$notification->is_read)
-                                        <button onclick="markAsRead({{ $notification->id }})" 
+                                        <button type="button" onclick="markAsRead({{ $notification->id }})" 
                                                 class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                             Mark Read
                                         </button>
                                     @endif
                                     
-                                    <button onclick="deleteNotification({{ $notification->id }})" 
+                                    <button type="button" onclick="deleteNotification({{ $notification->id }})" 
                                             class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                         Delete
                                     </button>
