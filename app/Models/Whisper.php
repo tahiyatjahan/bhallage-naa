@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Whisper extends Model
 {
-    protected $fillable = ['content', 'user_id'];
+    protected $fillable = ['content', 'user_id', 'is_highlighted'];
+    
+    protected $casts = [
+        'is_highlighted' => 'boolean',
+    ];
 
     public function user()
     {

@@ -6,8 +6,11 @@ use App\Models\MoodJournal;
 use App\Models\MoodJournalComment;
 use App\Models\MoodJournalUpvote;
 use App\Models\DailyPrompt;
+use App\Models\CommentReply;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class MoodJournalController extends Controller
 {
@@ -92,6 +95,14 @@ class MoodJournalController extends Controller
                 'support_resources' => $supportResources,
                 'message' => $supportMessage
             ]);
+
+            // Create notification for all admins about the support report
+            NotificationService::report(
+                reportableType: 'MoodJournal',
+                reportableId: $journal->id,
+                reportReason: 'Triggering keywords detected: ' . implode(', ', $detectedKeywords),
+                actionUrl: route('support-reports.index')
+            );
         }
 
         return redirect()->route('mood_journal.show', $journal->id)
@@ -100,7 +111,7 @@ class MoodJournalController extends Controller
 
     public function show($id)
     {
-        $journal = MoodJournal::with(['user', 'comments.user', 'upvotes.user', 'dailyPrompt'])->findOrFail($id);
+        $journal = MoodJournal::with(['user', 'comments.user', 'comments.replies.user', 'upvotes.user', 'dailyPrompt'])->findOrFail($id);
         $predefinedHashtags = MoodJournal::getPredefinedHashtags();
         
         // Get today's daily prompt
@@ -182,17 +193,30 @@ class MoodJournalController extends Controller
         
         if ($existingUpvote) {
             $existingUpvote->delete();
+            $upvoted = false;
         } else {
             MoodJournalUpvote::create([
                 'user_id' => Auth::id(),
                 'mood_journal_id' => $id
             ]);
+            $upvoted = true;
+            
+            // Create notification for journal owner
+            NotificationService::like(
+                postOwnerId: $journal->user_id,
+                likerId: Auth::id(),
+                postType: 'MoodJournal',
+                postId: $journal->id,
+                postTitle: Str::limit($journal->content, 50),
+                actionUrl: route('mood_journal.show', $journal->id)
+            );
         }
         
         // Return JSON response for AJAX requests
         if (request()->expectsJson()) {
             return response()->json([
                 'success' => true,
+                'upvoted' => $upvoted,
                 'upvotes' => $journal->upvotes()->count()
             ]);
         }
@@ -202,6 +226,8 @@ class MoodJournalController extends Controller
 
     public function comment(Request $request, $id)
     {
+        $journal = MoodJournal::findOrFail($id);
+        
         $validated = $request->validate([
             'content' => 'required|string|max:500'
         ]);
@@ -211,6 +237,16 @@ class MoodJournalController extends Controller
             'mood_journal_id' => $id,
             'content' => $validated['content']
         ]);
+
+        // Create notification for journal owner
+        NotificationService::comment(
+            postOwnerId: $journal->user_id,
+            commenterId: Auth::id(),
+            postType: 'MoodJournal',
+            postId: $journal->id,
+            postTitle: Str::limit($journal->content, 50),
+            actionUrl: route('mood_journal.show', $journal->id)
+        );
 
         // Return JSON response for AJAX requests
         if (request()->expectsJson()) {
@@ -307,5 +343,114 @@ class MoodJournalController extends Controller
         $todayPrompt = DailyPrompt::getTodayPrompt();
         
         return view('mood-journal.index', compact('journals', 'predefinedHashtags', 'hashtag', 'todayPrompt'));
+    }
+
+    /**
+     * Reply to a comment
+     */
+    public function replyToComment(Request $request, $id)
+    {
+        $comment = MoodJournalComment::findOrFail($id);
+        
+        $validated = $request->validate([
+            'content' => 'required|string|max:500'
+        ]);
+
+        $reply = CommentReply::create([
+            'user_id' => Auth::id(),
+            'comment_id' => $id,
+            'comment_type' => 'mood_journal',
+            'content' => $validated['content']
+        ]);
+
+        // Create notification for comment owner
+        NotificationService::reply(
+            commentOwnerId: $comment->user_id,
+            replierId: Auth::id(),
+            postType: 'MoodJournal',
+            postId: $comment->mood_journal_id,
+            postTitle: Str::limit($comment->moodJournal->content, 50),
+            actionUrl: route('mood_journal.show', $comment->mood_journal_id)
+        );
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Reply added successfully!',
+                'reply' => [
+                    'id' => $reply->id,
+                    'content' => $reply->content,
+                    'user' => [
+                        'name' => $reply->user->name,
+                        'profile_picture' => $reply->user->profile_picture
+                    ]
+                ]
+            ]);
+        }
+
+        return back()->with('status', 'Reply added successfully!');
+    }
+
+    /**
+     * Delete a reply
+     */
+    public function deleteReply($id)
+    {
+        $reply = CommentReply::findOrFail($id);
+        
+        if ($reply->user_id !== Auth::id() && !Auth::user()->is_admin) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized action.'
+                ], 403);
+            }
+            return back()->with('error', 'Unauthorized action.');
+        }
+        
+        $reply->delete();
+        
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Reply deleted successfully.'
+            ]);
+        }
+        
+        return back()->with('status', 'Reply deleted successfully.');
+    }
+
+    /**
+     * Edit a reply
+     */
+    public function editReply($id)
+    {
+        $reply = CommentReply::findOrFail($id);
+        
+        if ($reply->user_id !== Auth::id()) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+        
+        return view('mood-journal.edit-reply', compact('reply'));
+    }
+
+    /**
+     * Update a reply
+     */
+    public function updateReply(Request $request, $id)
+    {
+        $reply = CommentReply::findOrFail($id);
+        
+        if ($reply->user_id !== Auth::id()) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+        
+        $validated = $request->validate([
+            'content' => 'required|string|max:500'
+        ]);
+        
+        $reply->update(['content' => $validated['content']]);
+        
+        return back()->with('status', 'Reply updated successfully!');
     }
 }

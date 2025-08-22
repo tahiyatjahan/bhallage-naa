@@ -107,23 +107,18 @@
                         $hasUpvoted = \App\Models\MoodJournalUpvote::where('user_id', Auth::id())
                             ->where('mood_journal_id', $journal->id)
                             ->exists();
-                        // Debug info
-                        echo "<!-- Debug: User ID: " . Auth::id() . " -->";
-                        echo "<!-- Debug: Journal ID: " . $journal->id . " -->";
-                        echo "<!-- Debug: Total upvotes: " . $journal->upvotes->count() . " -->";
-                        echo "<!-- Debug: Has upvoted: " . ($hasUpvoted ? 'true' : 'false') . " -->";
                     @endphp
-                    <button type="button" onclick="upvoteJournal({{ $journal->id }})" class="flex items-center space-x-2 {{ $hasUpvoted ? 'text-blue-600' : 'text-gray-500' }} hover:text-blue-600 transition-colors" id="upvote-btn-{{ $journal->id }}">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
-                        </svg>
-                        <span class="font-medium" id="upvote-count-{{ $journal->id }}">{{ $journal->upvotes->count() }} upvotes</span>
+                    <button type="button" onclick="upvoteJournal({{ $journal->id }})" 
+                            class="flex items-center space-x-3 {{ $hasUpvoted ? 'text-red-500' : 'text-gray-500' }} hover:text-red-500 transition-all duration-200 group" 
+                            id="upvote-btn-{{ $journal->id }}">
+                        <span class="text-3xl group-hover:scale-110 transition-transform" id="upvote-emoji-{{ $journal->id }}">
+                            {{ $hasUpvoted ? '❤️' : '🤍' }}
+                        </span>
+                        <span class="text-lg font-semibold" id="upvote-count-{{ $journal->id }}">{{ $journal->upvotes->count() }} likes</span>
                     </button>
-                    <div class="flex items-center space-x-2 text-gray-500">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                        </svg>
-                        <span class="font-medium" id="comment-count-{{ $journal->id }}">{{ $journal->comments->count() }} comments</span>
+                    <div class="flex items-center space-x-3 text-gray-500">
+                        <span class="text-3xl">💬</span>
+                        <span class="text-lg font-semibold" id="comment-count-{{ $journal->id }}">{{ $journal->comments->count() }} comments</span>
                     </div>
                 </div>
                 @if(Auth::id() === $journal->user_id)
@@ -151,59 +146,179 @@
         </div>
 
         <!-- Comments Section -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-6">Comments</h2>
+        <div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20">
+            <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 px-8 py-6 text-white">
+                <h3 class="text-2xl font-bold text-center">💬 Community Discussion</h3>
+            </div>
 
             <!-- Add Comment Form -->
-            <form id="comment-form-{{ $journal->id }}" class="mb-8">
-                @csrf
-                <div class="mb-4">
-                    <textarea 
-                        name="content" 
-                        rows="3" 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('content') border-red-500 @enderror"
-                        placeholder="Add a comment..."
-                        required
-                    >{{ old('content') }}</textarea>
-                    <div id="comment-error-{{ $journal->id }}" class="mt-1 text-sm text-red-600 hidden"></div>
-                </div>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
-                    Add Comment
-                </button>
-            </form>
+            <div class="p-8 border-b border-gray-100">
+                <form id="comment-form-{{ $journal->id }}">
+                    @csrf
+                    <div class="space-y-4">
+                        <label for="comment-content-{{ $journal->id }}" class="block text-lg font-semibold text-gray-800">
+                            Share your thoughts about this journal entry:
+                        </label>
+                        <textarea name="content" id="comment-content-{{ $journal->id }}" rows="4" required
+                                  class="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-yellow-200 focus:border-yellow-500 text-lg transition-all duration-200 resize-none"
+                                  placeholder="What do you think about this journal entry? Share your thoughts..."></textarea>
+                        <div id="comment-error-{{ $journal->id }}" class="mt-1 text-sm text-red-600 hidden"></div>
+                        <div class="flex justify-end">
+                            <button type="submit" 
+                                    class="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white px-8 py-3 rounded-2xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                💭 Share Comment
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
             <!-- Comments List -->
-            <div id="comments-container-{{ $journal->id }}" class="space-y-4">
-                @forelse($journal->comments as $comment)
-                    <div class="border-b border-gray-200 pb-4 last:border-b-0" id="comment-{{ $comment->id }}">
-                        <div class="flex items-start justify-between mb-2">
-                            <div class="flex items-center space-x-3">
-                                @if($comment->user->profile_picture)
-                                    <img src="/{{ $comment->user->profile_picture }}" alt="Profile Picture" class="w-8 h-8 rounded-full object-cover">
-                                @else
-                                    <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                                        <span class="text-gray-600 font-semibold text-sm">{{ substr($comment->user->name, 0, 1) }}</span>
+            <div class="p-8">
+                <div id="comments-container-{{ $journal->id }}" class="space-y-6">
+                    @forelse($journal->comments as $comment)
+                        <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-100" id="comment-{{ $comment->id }}">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    @if($comment->user->profile_picture)
+                                        <img src="/{{ $comment->user->profile_picture }}" 
+                                             alt="{{ $comment->user->name }}'s profile picture"
+                                             class="w-12 h-12 rounded-full object-cover border-2 border-yellow-200 shadow-md">
+                                    @else
+                                        <div class="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md">
+                                            {{ substr($comment->user->name, 0, 1) }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="font-semibold text-gray-900 text-lg">{{ $comment->user->name }}</span>
+                                        <span class="text-sm text-gray-500 flex items-center">
+                                            <span class="mr-2">🕐</span>
+                                            {{ $comment->created_at->diffForHumans() }}
+                                        </span>
                                     </div>
-                                @endif
-                                <div>
-                                    <h4 class="font-semibold text-gray-900">{{ $comment->user->name }}</h4>
-                                    <p class="text-sm text-gray-500">{{ $comment->created_at->diffForHumans() }}</p>
+                                    <p class="text-gray-700 text-lg leading-relaxed">{{ $comment->content }}</p>
+                                    
+                                    <!-- Comment Actions -->
+                                    <div class="mt-4 flex items-center justify-between">
+                                        <div class="flex space-x-4">
+                                            <button type="button" 
+                                                    onclick="toggleReplyForm({{ $comment->id }})"
+                                                    class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                                <span class="mr-2">💬</span>
+                                                Reply
+                                            </button>
+                                            @if($comment->user_id === Auth::id())
+                                                <a href="{{ route('mood_journal.comment.edit', $comment->id) }}" 
+                                                   class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                                    <span class="mr-2">✏️</span>
+                                                    Edit
+                                                </a>
+                                                <button type="button" 
+                                                        onclick="deleteComment({{ $comment->id }})"
+                                                        class="text-red-600 hover:text-red-800 font-medium flex items-center">
+                                                    <span class="mr-2">🗑️</span>
+                                                    Delete
+                                                </button>
+                                            @elseif(Auth::user()->is_admin)
+                                                <button type="button" 
+                                                        onclick="deleteComment({{ $comment->id }})"
+                                                        class="text-red-600 hover:text-red-800 font-medium flex items-center">
+                                                    <span class="mr-2">🗑️</span>
+                                                    Delete
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Reply Form (Hidden by default) -->
+                                    <div id="reply-form-{{ $comment->id }}" class="mt-4 hidden">
+                                        <form onsubmit="addReply({{ $comment->id }}); return false;" class="space-y-3">
+                                            @csrf
+                                            <textarea name="content" rows="2" required
+                                                      class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-200 focus:border-blue-500 text-sm transition-all duration-200 resize-none"
+                                                      placeholder="Write your reply..."></textarea>
+                                            <div class="flex justify-end space-x-2">
+                                                <button type="button" 
+                                                        onclick="toggleReplyForm({{ $comment->id }})"
+                                                        class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" 
+                                                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                                    Reply
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <!-- Replies Section -->
+                                    @if($comment->replies->count() > 0)
+                                        <div class="mt-4 ml-8 space-y-3">
+                                            <div class="text-sm text-gray-500 font-medium mb-2">💬 Replies:</div>
+                                            @foreach($comment->replies as $reply)
+                                                <div class="bg-white rounded-lg p-4 border border-gray-200" id="reply-{{ $reply->id }}">
+                                                    <div class="flex items-start space-x-3">
+                                                        <div class="flex-shrink-0">
+                                                            @if($reply->user->profile_picture)
+                                                                <img src="/{{ $reply->user->profile_picture }}" 
+                                                                     alt="{{ $reply->user->name }}'s profile picture"
+                                                                     class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                                                            @else
+                                                                <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                                                    {{ substr($reply->user->name, 0, 1) }}
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <div class="flex items-center justify-between mb-2">
+                                                                <span class="font-medium text-gray-900 text-sm">{{ $reply->user->name }}</span>
+                                                                <span class="text-xs text-gray-500">
+                                                                    {{ $reply->created_at->diffForHumans() }}
+                                                                </span>
+                                                            </div>
+                                                            <p class="text-gray-700 text-sm">{{ $reply->content }}</p>
+                                                            
+                                                            <!-- Reply Actions -->
+                                                            @if($reply->user_id === Auth::id())
+                                                                <div class="mt-2 flex space-x-3">
+                                                                    <a href="{{ route('mood_journal.reply.edit', $reply->id) }}" 
+                                                                       class="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                                                        Edit
+                                                                    </a>
+                                                                    <button type="button" 
+                                                                            onclick="deleteReply({{ $reply->id }})"
+                                                                            class="text-red-600 hover:text-red-800 text-xs font-medium">
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                            @elseif(Auth::user()->is_admin)
+                                                                <div class="mt-2">
+                                                                    <button type="button" 
+                                                                            onclick="deleteReply({{ $reply->id }})"
+                                                                            class="text-red-600 hover:text-red-800 text-xs font-medium">
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
-                            @if($comment->user_id === Auth::id() || Auth::user()->is_admin)
-                                <div class="flex items-center space-x-2">
-                                    <a href="{{ route('mood_journal.comment.edit', $comment->id) }}" class="text-blue-600 hover:text-blue-800 text-sm">Edit</a>
-                                    <button type="button" onclick="deleteComment({{ $comment->id }})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
-                                </div>
-                            @endif
                         </div>
-                        <p class="text-gray-800 ml-11">{{ $comment->content }}</p>
-                    </div>
-                @empty
-                    <div class="text-center py-8" id="no-comments-{{ $journal->id }}">
-                        <p class="text-gray-500">No comments yet. Be the first to comment!</p>
-                    </div>
-                @endforelse
+                    @empty
+                        <div class="text-center py-12" id="no-comments-{{ $journal->id }}">
+                            <div class="text-6xl mb-4">💭</div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">No comments yet</h3>
+                            <p class="text-gray-600">Be the first to share your thoughts about this journal entry!</p>
+                        </div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -215,46 +330,75 @@ const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute
 
 // Upvote functionality
 function upvoteJournal(journalId) {
-    const button = document.getElementById(`upvote-btn-${journalId}`);
-    const countSpan = document.getElementById(`upvote-count-${journalId}`);
+    console.log('Upvote function called for journal:', journalId);
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    console.log('CSRF Token:', csrfToken);
     
     fetch(`/mood-journal/${journalId}/upvote`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json'
-        }
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Response is not JSON!');
+        }
+        
+        return response.json();
+    })
     .then(data => {
+        console.log('Data received:', data);
         if (data.success) {
-            // Update count only
-            countSpan.textContent = `${data.upvotes} upvotes`;
+            const upvoteCount = document.getElementById(`upvote-count-${journalId}`);
+            const upvoteButton = document.querySelector(`[onclick="upvoteJournal(${journalId})"]`);
             
-            // Toggle button color
-            if (button.classList.contains('text-blue-600')) {
-                button.classList.remove('text-blue-600');
-                button.classList.add('text-gray-500');
+            console.log('Upvote count element:', upvoteCount);
+            console.log('Upvote button element:', upvoteButton);
+            
+            upvoteCount.textContent = `${data.upvotes} likes`;
+            
+            // Toggle button emoji
+            if (data.upvoted) {
+                upvoteButton.querySelector('#upvote-emoji-' + journalId).textContent = '❤️';
+                upvoteButton.classList.remove('text-gray-500');
+                upvoteButton.classList.add('text-red-500');
             } else {
-                button.classList.remove('text-gray-500');
-                button.classList.add('text-blue-600');
+                upvoteButton.querySelector('#upvote-emoji-' + journalId).textContent = '🤍';
+                upvoteButton.classList.remove('text-red-500');
+                upvoteButton.classList.add('text-gray-500');
             }
-        } else {
-            console.error('Upvote failed:', data.message);
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error details:', error);
+        console.error('Error message:', error.message);
     });
 }
 
 // Comment functionality
 function addComment(journalId) {
     const form = document.getElementById(`comment-form-${journalId}`);
-    const textarea = form.querySelector('textarea[name="content"]');
+    const textarea = document.getElementById(`comment-content-${journalId}`);
     const errorDiv = document.getElementById(`comment-error-${journalId}`);
     const submitButton = form.querySelector('button[type="submit"]');
+    
+    // Prevent double submission
+    if (submitButton.disabled) {
+        return;
+    }
     
     // Clear previous errors
     errorDiv.classList.add('hidden');
@@ -294,23 +438,45 @@ function addComment(journalId) {
             }
             
             const newCommentHtml = `
-                <div class="border-b border-gray-200 pb-4 last:border-b-0" id="comment-${data.comment.id}">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                                <span class="text-gray-600 font-semibold text-sm">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900">{{ Auth::user()->name }}</h4>
-                                <p class="text-sm text-gray-500">Just now</p>
-                            </div>
+                <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-100" id="comment-${data.comment.id}">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            @if(Auth::user()->profile_picture)
+                                <img src="/{{ Auth::user()->profile_picture }}" 
+                                     alt="{{ Auth::user()->name }}'s profile picture"
+                                     class="w-12 h-12 rounded-full object-cover border-2 border-yellow-200 shadow-md">
+                            @else
+                                <div class="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md">
+                                    {{ substr(Auth::user()->name, 0, 1) }}
+                                </div>
+                            @endif
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <a href="/mood-journal/comment/${data.comment.id}/edit" class="text-blue-600 hover:text-blue-800 text-sm">Edit</a>
-                            <button type="button" onclick="deleteComment(${data.comment.id})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-semibold text-gray-900 text-lg">{{ Auth::user()->name }}</span>
+                                <span class="text-sm text-gray-500 flex items-center">
+                                    <span class="mr-2">🕐</span>
+                                    Just now
+                                </span>
+                            </div>
+                            <p class="text-gray-700 text-lg leading-relaxed">${data.comment.content}</p>
+                            
+                            <!-- Comment Actions -->
+                            <div class="mt-4 flex space-x-4">
+                                <a href="/mood-journal/comment/${data.comment.id}/edit" 
+                                   class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                    <span class="mr-2">✏️</span>
+                                    Edit
+                                </a>
+                                <button type="button" 
+                                        onclick="deleteComment(${data.comment.id})"
+                                        class="text-red-600 hover:text-red-800 font-medium flex items-center">
+                                    <span class="mr-2">🗑️</span>
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <p class="text-gray-800 ml-11">${data.comment.content}</p>
                 </div>
             `;
             
@@ -329,7 +495,7 @@ function addComment(journalId) {
     })
     .finally(() => {
         submitButton.disabled = false;
-        submitButton.textContent = 'Add Comment';
+        submitButton.textContent = '💭 Share Comment';
     });
 }
 
@@ -387,5 +553,159 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Reply functionality
+function toggleReplyForm(commentId) {
+    const replyForm = document.getElementById(`reply-form-${commentId}`);
+    replyForm.classList.toggle('hidden');
+}
+
+function addReply(commentId) {
+    const form = event.target;
+    const textarea = form.querySelector('textarea[name="content"]');
+    const content = textarea.value.trim();
+    
+    if (!content) {
+        return;
+    }
+    
+    // Show loading state
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Adding...';
+    
+    fetch(`/mood-journal/comment/${commentId}/reply`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            content: content
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Clear form and hide it
+            textarea.value = '';
+            toggleReplyForm(commentId);
+            
+            // Add new reply to the DOM
+            console.log('Looking for comment element with ID:', `comment-${commentId}`);
+            const commentElement = document.getElementById(`comment-${commentId}`);
+            if (!commentElement) {
+                console.error('Comment element not found for comment ID:', commentId);
+                console.log('Available comment elements:', document.querySelectorAll('[id^="comment-"]'));
+                return;
+            }
+            console.log('Found comment element:', commentElement);
+            
+            let repliesSection = commentElement.querySelector('.ml-8');
+            
+            if (!repliesSection) {
+                // Create replies section if it doesn't exist
+                repliesSection = document.createElement('div');
+                repliesSection.className = 'mt-4 ml-8 space-y-3';
+                repliesSection.innerHTML = '<div class="text-sm text-gray-500 font-medium mb-2">💬 Replies:</div>';
+                commentElement.appendChild(repliesSection);
+            }
+            
+            const newReplyHtml = `
+                <div class="bg-white rounded-lg p-4 border border-gray-200" id="reply-${data.reply.id}">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0">
+                            @if(Auth::user()->profile_picture)
+                                <img src="/{{ Auth::user()->profile_picture }}" 
+                                     alt="{{ Auth::user()->name }}'s profile picture"
+                                     class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                            @else
+                                <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    {{ substr(Auth::user()->name, 0, 1) }}
+                                </div>
+                            @endif
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium text-gray-900 text-sm">{{ Auth::user()->name }}</span>
+                                <span class="text-xs text-gray-500">Just now</span>
+                            </div>
+                            <p class="text-gray-700 text-sm">${data.reply.content}</p>
+                            
+                            <!-- Reply Actions -->
+                            <div class="mt-2 flex space-x-3">
+                                <a href="/mood-journal/reply/${data.reply.id}/edit" 
+                                   class="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                    Edit
+                                </a>
+                                <button type="button" 
+                                        onclick="deleteReply(${data.reply.id})"
+                                        class="text-red-600 hover:text-red-800 text-xs font-medium">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            repliesSection.insertAdjacentHTML('beforeend', newReplyHtml);
+            
+        } else {
+            console.error('Reply failed:', data.message);
+            alert('Failed to add reply: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error adding reply:', error);
+        alert('Error adding reply. Please try again.');
+    })
+    .finally(() => {
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+    });
+}
+
+function deleteReply(replyId) {
+    if (!confirm('Are you sure you want to delete this reply?')) {
+        return;
+    }
+    
+    fetch(`/mood-journal/reply/${replyId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove reply from DOM
+            const replyElement = document.getElementById(`reply-${replyId}`);
+            replyElement.remove();
+            
+            // Check if this was the last reply and remove replies section if empty
+            const repliesSection = replyElement.parentElement;
+            if (repliesSection.children.length === 1) { // Only the header remains
+                repliesSection.remove();
+            }
+        } else {
+            console.error('Delete reply failed:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 </script>
 @endsection 

@@ -123,6 +123,26 @@
         </div>
     @endif
 
+    <!-- Notifications Card -->
+    @if(isset($unreadNotifications) && $unreadNotifications > 0)
+        <div class="feature-card mb-8 bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-500">
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="text-3xl">🔔</div>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-blue-800">You have {{ $unreadNotifications }} unread notification{{ $unreadNotifications === 1 ? '' : 's' }}</h3>
+                    <p class="text-blue-700">Stay updated with likes, comments, and replies on your content.</p>
+                </div>
+                <div class="flex-shrink-0">
+                    <a href="{{ route('notifications.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        View Notifications
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Quick Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="story-card">

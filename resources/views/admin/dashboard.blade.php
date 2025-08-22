@@ -144,6 +144,50 @@
         </a>
     </div>
 
+    <!-- Highlighted Whispers -->
+    <div class="bg-white rounded-lg shadow-md mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-900">⭐ Highlighted Whispers</h2>
+                <a href="{{ route('whispers.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View All Whispers</a>
+            </div>
+        </div>
+        <div class="p-6">
+            @if($highlightedWhispers->count() > 0)
+                <div class="space-y-4">
+                    @foreach($highlightedWhispers as $whisper)
+                        <div class="flex items-center justify-between p-4 border-2 border-yellow-300 rounded-lg bg-yellow-50">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="text-yellow-600 font-semibold">⭐ Highlighted</span>
+                                    <span class="text-gray-500 text-sm">Whisper #{{ $whisper->id }}</span>
+                                </div>
+                                <p class="text-sm text-gray-800">{{ Str::limit($whisper->content, 150) }}</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ $whisper->created_at->diffForHumans() }}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <form action="{{ route('admin.whispers.toggle-highlight', $whisper->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                        Unhighlight
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.whispers.delete', $whisper->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm" onclick="return confirm('Are you sure you want to delete this whisper?')">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-gray-500 text-center py-4">No highlighted whispers found.</p>
+            @endif
+        </div>
+    </div>
+
     <!-- Recent Reports -->
     <div class="bg-white rounded-lg shadow-md">
         <div class="px-6 py-4 border-b border-gray-200">

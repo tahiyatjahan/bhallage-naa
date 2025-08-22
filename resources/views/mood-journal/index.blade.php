@@ -144,20 +144,19 @@
 
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <form action="{{ route('mood_journal.upvote', $journal->id) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
-                                </svg>
-                                <span>{{ $journal->upvotes->count() }}</span>
-                            </button>
-                        </form>
-                        <a href="{{ route('mood_journal.show', $journal->id) }}" class="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                            </svg>
-                            <span>{{ $journal->comments->count() }} comments</span>
+                        @php
+                            $hasUpvoted = \App\Models\MoodJournalUpvote::where('user_id', Auth::id())
+                                ->where('mood_journal_id', $journal->id)
+                                ->exists();
+                        @endphp
+                        <button onclick="upvoteJournal({{ $journal->id }})" 
+                                class="flex items-center space-x-2 {{ $hasUpvoted ? 'text-red-500' : 'text-gray-500' }} hover:text-red-500 transition-colors">
+                            <span class="text-lg" id="upvote-emoji-{{ $journal->id }}">{{ $hasUpvoted ? '❤️' : '🤍' }}</span>
+                            <span class="text-sm font-medium" id="upvote-count-{{ $journal->id }}">{{ $journal->upvotes->count() }}</span>
+                        </button>
+                        <a href="{{ route('mood_journal.show', $journal->id) }}" class="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors">
+                            <span class="text-lg">💬</span>
+                            <span class="text-sm font-medium">{{ $journal->comments->count() }} comments</span>
                         </a>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -203,4 +202,65 @@
         </div>
     @endif
 </div>
+
+<script>
+function upvoteJournal(journalId) {
+    console.log('Upvote function called for journal:', journalId);
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    console.log('CSRF Token:', csrfToken);
+    
+    fetch(`/mood-journal/${journalId}/upvote`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Response is not JSON!');
+        }
+        
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data received:', data);
+        if (data.success) {
+            const upvoteCount = document.getElementById(`upvote-count-${journalId}`);
+            const upvoteButton = document.querySelector(`[onclick="upvoteJournal(${journalId})"]`);
+            
+            console.log('Upvote count element:', upvoteCount);
+            console.log('Upvote button element:', upvoteButton);
+            
+            upvoteCount.textContent = data.upvotes;
+            
+            // Toggle button emoji
+            if (data.upvoted) {
+                upvoteButton.querySelector('#upvote-emoji-' + journalId).textContent = '❤️';
+                upvoteButton.classList.remove('text-gray-500');
+                upvoteButton.classList.add('text-red-500');
+            } else {
+                upvoteButton.querySelector('#upvote-emoji-' + journalId).textContent = '🤍';
+                upvoteButton.classList.remove('text-red-500');
+                upvoteButton.classList.add('text-gray-500');
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error details:', error);
+        console.error('Error message:', error.message);
+    });
+}
+</script>
 @endsection 

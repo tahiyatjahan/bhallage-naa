@@ -9,6 +9,7 @@ use App\Http\Controllers\MoodJournalController;
 use App\Http\Controllers\DailyPromptController;
 use App\Http\Controllers\CreativePostController;
 use App\Http\Controllers\SupportReportController;
+use App\Http\Controllers\NotificationsController;
 
 Route::get('/welcome', function () {
     return view('welcome_landing');
@@ -59,12 +60,29 @@ Route::middleware('auth')->group(function () {
     Route::delete('/mood-journal/comment/{id}', [MoodJournalController::class, 'deleteComment'])->name('mood_journal.comment.delete');
     Route::get('/mood-journal/comment/{id}/edit', [MoodJournalController::class, 'editComment'])->name('mood_journal.comment.edit');
     Route::patch('/mood-journal/comment/{id}', [MoodJournalController::class, 'updateComment'])->name('mood_journal.comment.update');
+    
+    // Comment Replies for Mood Journal
+    Route::post('/mood-journal/comment/{id}/reply', [MoodJournalController::class, 'replyToComment'])->name('mood_journal.comment.reply');
+    Route::delete('/mood-journal/reply/{id}', [MoodJournalController::class, 'deleteReply'])->name('mood_journal.reply.delete');
+    Route::get('/mood-journal/reply/{id}/edit', [MoodJournalController::class, 'editReply'])->name('mood_journal.reply.edit');
+    Route::patch('/mood-journal/reply/{id}', [MoodJournalController::class, 'updateReply'])->name('mood_journal.reply.update');
 
     // Support Reports
     Route::get('/support-reports', [SupportReportController::class, 'index'])->name('support-reports.index');
     Route::get('/support-reports/{id}', [SupportReportController::class, 'show'])->name('support-reports.show');
     Route::patch('/support-reports/{id}/read', [SupportReportController::class, 'markAsRead'])->name('support-reports.read');
     Route::delete('/support-reports/{id}', [SupportReportController::class, 'destroy'])->name('support-reports.destroy');
+
+    // Notifications
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/{id}', [NotificationsController::class, 'show'])->name('notifications.show');
+        Route::patch('/notifications/{id}/mark-read', [NotificationsController::class, 'markAsRead'])->name('notifications.mark-read');
+        Route::patch('/notifications/mark-all-read', [NotificationsController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+        Route::delete('/notifications/{id}', [NotificationsController::class, 'destroy'])->name('notifications.destroy');
+        Route::get('/notifications/unread/count', [NotificationsController::class, 'getUnreadCount'])->name('notifications.unread-count');
+        Route::get('/notifications/recent', [NotificationsController::class, 'getRecent'])->name('notifications.recent');
+    });
 
     // Express Yourself - Creative Posts
     Route::get('/express-yourself', [CreativePostController::class, 'index'])->name('creative-posts.index');
@@ -78,6 +96,88 @@ Route::middleware('auth')->group(function () {
     Route::post('/express-yourself/{id}/like', [CreativePostController::class, 'like'])->name('creative-posts.like');
     Route::post('/express-yourself/{id}/comment', [CreativePostController::class, 'comment'])->name('creative-posts.comment');
     Route::delete('/express-yourself/comment/{id}', [CreativePostController::class, 'deleteComment'])->name('creative-posts.comment.delete');
+Route::get('/express-yourself/comment/{id}/edit', [CreativePostController::class, 'editComment'])->name('creative-posts.edit-comment');
+Route::patch('/express-yourself/comment/{id}', [CreativePostController::class, 'updateComment'])->name('creative-posts.comment.update');
+
+    // Comment Replies for Creative Posts
+    Route::post('/express-yourself/comment/{id}/reply', [CreativePostController::class, 'replyToComment'])->name('creative-posts.comment.reply');
+    Route::delete('/express-yourself/reply/{id}', [CreativePostController::class, 'deleteReply'])->name('creative-posts.reply.delete');
+    Route::get('/express-yourself/reply/{id}/edit', [CreativePostController::class, 'editReply'])->name('creative-posts.reply.edit');
+    Route::patch('/express-yourself/reply/{id}', [CreativePostController::class, 'updateReply'])->name('creative-posts.reply.update');
+
+    // Debug route for file upload testing
+    Route::get('/test-upload', function() {
+        return view('test-upload');
+    })->name('test-upload-page');
+    
+    Route::get('/test-upload-api', function() {
+        return response()->json([
+            'php_version' => PHP_VERSION,
+            'upload_max_filesize' => ini_get('upload_max_filesize'),
+            'post_max_size' => ini_get('post_max_size'),
+            'max_execution_time' => ini_get('max_execution_time'),
+            'memory_limit' => ini_get('memory_limit'),
+            'storage_path' => storage_path(),
+            'public_path' => public_path(),
+            'storage_link_exists' => file_exists(public_path('storage')),
+            'storage_writable' => is_writable(storage_path('app/public')),
+            'creative_posts_dir_exists' => is_dir(storage_path('app/public/creative-posts')),
+            'creative_posts_dir_writable' => is_dir(storage_path('app/public/creative-posts')) ? is_writable(storage_path('app/public/creative-posts')) : false
+        ]);
+    })->name('test-upload');
+    
+    Route::post('/test-upload', function() {
+        try {
+            if (!request()->hasFile('test_file')) {
+                return response()->json(['error' => 'No file uploaded']);
+            }
+            
+            $file = request()->file('test_file');
+            
+            $result = [
+                'file_info' => [
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                    'extension' => $file->getClientOriginalExtension(),
+                    'is_valid' => $file->isValid(),
+                    'error' => $file->getError(),
+                    'error_message' => $file->getErrorMessage()
+                ],
+                'storage_test' => []
+            ];
+            
+            // Test different storage methods
+            $filename = 'test_' . time() . '.' . $file->getClientOriginalExtension();
+            
+            // Test public disk
+            try {
+                $path = $file->storeAs('creative-posts', $filename, 'public');
+                $result['storage_test']['public'] = ['success' => true, 'path' => $path];
+                
+                // Clean up test file
+                \Storage::disk('public')->delete($path);
+            } catch (\Exception $e) {
+                $result['storage_test']['public'] = ['success' => false, 'error' => $e->getMessage()];
+            }
+            
+            // Test local disk
+            try {
+                $path = $file->storeAs('creative-posts', $filename, 'local');
+                $result['storage_test']['local'] = ['success' => true, 'path' => $path];
+                
+                // Clean up test file
+                \Storage::disk('local')->delete($path);
+            } catch (\Exception $e) {
+                $result['storage_test']['local'] = ['success' => false, 'error' => $e->getMessage()];
+            }
+            
+            return response()->json($result);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    });
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -108,7 +208,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     
     // Creative Posts Management
     Route::get('/admin/creative-posts', [CreativePostController::class, 'adminIndex'])->name('admin.creative-posts.index');
-    Route::patch('/admin/creative-posts/{id}/toggle-featured', [CreativePostController::class, 'adminToggleFeatured'])->name('admin.creative-posts.toggle-featured');
     Route::delete('/admin/creative-posts/{id}', [CreativePostController::class, 'adminDestroy'])->name('admin.creative-posts.destroy');
     
     // Statistics
@@ -116,6 +215,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     
     // Whisper Management
     Route::delete('/admin/whispers/{id}', [AdminController::class, 'deleteWhisper'])->name('admin.whispers.delete');
+    Route::patch('/admin/whispers/{id}/toggle-highlight', [SecretWhisperController::class, 'toggleHighlight'])->name('admin.whispers.toggle-highlight');
 });
 
 require __DIR__.'/auth.php';

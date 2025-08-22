@@ -48,7 +48,8 @@ class DailyPromptController extends Controller
                                      ->first();
         }
 
-        return view('daily-prompt.show', compact('prompt', 'userJournal'));
+        // Pass as todayPrompt to match the Blade view expectations
+        return view('daily-prompt.show', ['todayPrompt' => $prompt, 'userJournal' => $userJournal]);
     }
 
     /**

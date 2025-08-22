@@ -10,13 +10,22 @@
                 </span>
             @endif
         </a>
+        <a href="{{ route('notifications.index') }}" class="text-lg font-bold text-yellow-900 hover:text-white relative">
+            Notifications
+            @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-blue-600 rounded-full">
+                    {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
+                </span>
+            @endif
+        </a>
         @if(Auth::user() && Auth::user()->is_admin)
             <div class="flex items-center space-x-4 ml-4 pl-4 border-l-2 border-yellow-700">
                 <a href="{{ route('admin.dashboard') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Admin</a>
                 <a href="{{ route('admin.users') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Users</a>
                 <a href="{{ route('admin.reports') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Reports</a>
-                <a href="{{ route('admin.daily-prompts.index') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Prompts</a>
-                <a href="{{ route('admin.statistics') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Stats</a>
+                                    <a href="{{ route('admin.daily-prompts.index') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Prompts</a>
+                    <a href="{{ route('admin.creative-posts.index') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Creative</a>
+                    <a href="{{ route('admin.statistics') }}" class="text-lg font-bold text-yellow-900 hover:text-white">Stats</a>
             </div>
         @endif
     </div>

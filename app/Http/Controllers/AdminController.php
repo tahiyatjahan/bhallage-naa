@@ -23,8 +23,9 @@ class AdminController extends Controller
         $pendingReports = WhisperReport::count(); // All reports are considered pending since there's no status column
         $totalDailyPrompts = DailyPrompt::count();
         $activeDailyPrompts = DailyPrompt::where('is_active', true)->count();
+        $highlightedWhispers = Whisper::where('is_highlighted', true)->latest()->take(5)->get();
         
-        return view('admin.dashboard', compact('reports', 'totalUsers', 'totalWhispers', 'totalMoodJournals', 'pendingReports', 'totalDailyPrompts', 'activeDailyPrompts'));
+        return view('admin.dashboard', compact('reports', 'totalUsers', 'totalWhispers', 'totalMoodJournals', 'pendingReports', 'totalDailyPrompts', 'activeDailyPrompts', 'highlightedWhispers'));
     }
 
     public function deleteWhisper($id)

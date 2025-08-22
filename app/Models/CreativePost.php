@@ -51,48 +51,56 @@ class CreativePost extends Model
         return [
             'music' => [
                 'label' => 'Music',
+                'emoji' => '🎵',
                 'icon' => 'music-note',
                 'color' => 'purple',
                 'description' => 'Share your musical creations, covers, or compositions'
             ],
             'artwork' => [
                 'label' => 'Artwork',
+                'emoji' => '🎨',
                 'icon' => 'palette',
                 'color' => 'pink',
                 'description' => 'Paintings, drawings, digital art, and visual creations'
             ],
             'poetry' => [
                 'label' => 'Poetry',
+                'emoji' => '📝',
                 'icon' => 'book-open',
                 'color' => 'blue',
                 'description' => 'Poems, verses, and lyrical expressions'
             ],
             'photography' => [
                 'label' => 'Photography',
+                'emoji' => '📸',
                 'icon' => 'camera',
                 'color' => 'green',
                 'description' => 'Photos, portraits, landscapes, and visual stories'
             ],
             'writing' => [
                 'label' => 'Writing',
+                'emoji' => '✍️',
                 'icon' => 'pencil',
                 'color' => 'yellow',
                 'description' => 'Stories, essays, articles, and written works'
             ],
             'video' => [
                 'label' => 'Video',
+                'emoji' => '🎬',
                 'icon' => 'video-camera',
                 'color' => 'red',
                 'description' => 'Short films, animations, and video content'
             ],
             'craft' => [
                 'label' => 'Craft',
+                'emoji' => '🧶',
                 'icon' => 'scissors',
                 'color' => 'orange',
                 'description' => 'Handmade items, DIY projects, and crafts'
             ],
             'other' => [
                 'label' => 'Other',
+                'emoji' => '✨',
                 'icon' => 'star',
                 'color' => 'gray',
                 'description' => 'Other creative expressions and projects'
@@ -153,6 +161,22 @@ class CreativePost extends Model
     /**
      * Get media type
      */
+    public function getMediaUrl()
+    {
+        if (!$this->hasMedia()) {
+            return null;
+        }
+        
+        // Check if file exists in storage
+        $fullPath = storage_path('app/public/' . $this->media_file);
+        if (file_exists($fullPath)) {
+            return asset('storage/' . $this->media_file);
+        }
+        
+        // Fallback to asset helper
+        return asset('storage/' . $this->media_file);
+    }
+
     public function getMediaType()
     {
         if ($this->media_file) {
@@ -237,14 +261,19 @@ class CreativePost extends Model
     }
 
     /**
-     * Set tags from array
+     * Set tags from array or comma-separated string
      */
     public function setTagsAttribute($value)
     {
         if (is_array($value)) {
             $this->attributes['tags'] = json_encode($value);
+        } elseif (is_string($value)) {
+            // Convert comma-separated string to array
+            $tags = array_map('trim', explode(',', $value));
+            $tags = array_filter($tags); // Remove empty values
+            $this->attributes['tags'] = json_encode($tags);
         } else {
-            $this->attributes['tags'] = $value;
+            $this->attributes['tags'] = json_encode([]);
         }
     }
 } 

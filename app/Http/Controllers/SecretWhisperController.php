@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Whisper;
 use App\Models\WhisperReport;
+use App\Services\NotificationService;
 
 class SecretWhisperController extends Controller
 {
@@ -39,13 +40,38 @@ class SecretWhisperController extends Controller
 
     public function storeReport(Request $request, $id)
     {
+        $whisper = Whisper::findOrFail($id);
+        
         $request->validate([
             'reason' => 'required|string|max:500',
         ]);
+        
         WhisperReport::create([
             'whisper_id' => $id,
             'reason' => $request->reason,
         ]);
+
+        // Create notification for all admins
+        NotificationService::report(
+            reportableType: 'Whisper',
+            reportableId: $id,
+            reportReason: $request->reason,
+            actionUrl: route('admin.reports')
+        );
+
         return redirect()->route('whispers.index')->with('status', 'Thank you for reporting this whisper.');
+    }
+
+    /**
+     * Toggle highlight status of a whisper (admin only)
+     */
+    public function toggleHighlight($id)
+    {
+        $whisper = Whisper::findOrFail($id);
+        $whisper->is_highlighted = !$whisper->is_highlighted;
+        $whisper->save();
+        
+        $status = $whisper->is_highlighted ? 'highlighted' : 'unhighlighted';
+        return back()->with('status', "Whisper {$status} successfully.");
     }
 }
