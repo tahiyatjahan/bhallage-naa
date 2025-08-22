@@ -69,7 +69,8 @@ class NotificationsController extends Controller
         if (request()->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => "Marked {$count} notifications as read"
+                'message' => "Marked {$count} notifications as read",
+                'count' => $count,
             ]);
         }
 
@@ -114,26 +115,6 @@ class NotificationsController extends Controller
      */
     public function getRecent()
     {
-        $notifications = Notification::where('user_id', Auth::id())
-            ->with(['fromUser'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
-
-        return response()->json([
-            'notifications' => $notifications->map(function ($notification) {
-                return [
-                    'id' => $notification->id,
-                    'type' => $notification->type,
-                    'title' => $notification->title,
-                    'message' => $notification->message,
-                    'icon' => $notification->icon,
-                    'color_class' => $notification->color_class,
-                    'time_ago' => $notification->time_ago,
-                    'is_read' => $notification->is_read,
-                    'action_url' => $notification->action_url
-                ];
-            })
-        ]);
+        
     }
 }
